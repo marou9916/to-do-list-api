@@ -18,6 +18,8 @@ func InitDatabase() {
 	}
 	log.Println("Base de données connectée avec succès !")
 
+	DB.Migrator().DropTable(&models.Task{})
+
 	err = DB.AutoMigrate(&models.User{}, &models.Task{})
 	if err != nil {
 		log.Fatal("Échec de la migration des modèles :", err)

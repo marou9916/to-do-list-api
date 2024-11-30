@@ -8,7 +8,7 @@ import (
 type Task struct {
 	gorm.Model
 	Title  string `gorm:"not null" json:"title"`
-	Status string `gorm:"default:pending" json:"status"`
+	Status string `gorm:"check:status IN ('to-do','in-progress','done')" json:"status"`
 	UserID uint   `gorm:"not null" json:"user_id"` // Clé étrangère
 	User   User   `gorm:"constraint:OnDelete:CASCADE;" json:"-"`
 }
