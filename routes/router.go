@@ -12,6 +12,8 @@ func SetupRouter() *gin.Engine {
 	//Routes pour les utilisateurs
 	userRoutes := router.Group("/users")
 	{
+		userRoutes.GET("/", controllers.GetUsers)
+		userRoutes.GET("/:id", controllers.GetUser)
 		userRoutes.POST("/", controllers.CreateUser)
 		userRoutes.DELETE("/:id", controllers.DeleteUser)
 	}
