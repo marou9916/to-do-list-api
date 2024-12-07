@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"net/http"
 	"to-do-list-api/controllers"
 
 	"github.com/gin-gonic/gin"
@@ -14,8 +15,12 @@ func SetupRouter() *gin.Engine {
 	{
 		userRoutes.GET("/", controllers.GetUsers)
 		userRoutes.GET("/:id", controllers.GetUser)
+		userRoutes.PUT("/:id", controllers.UpdateUser)
 		userRoutes.POST("/", controllers.CreateUser)
 		userRoutes.DELETE("/:id", controllers.DeleteUser)
+		userRoutes.DELETE("/", func(c *gin.Context) {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "L'ID est requis pour cette opération"})
+		})
 	}
 
 	//Routes pour les tâches
