@@ -39,7 +39,7 @@ func CreateUser(c *gin.Context) {
 
 	if err := query.Where("username = ?", user.Username).First(&existingUser).Error; err != nil {
 		if err != gorm.ErrRecordNotFound {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Erreur avec la base de données lors de la vérification du user par CreateUser "})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Erreur interne lors de la vérification du username"})
 			return
 		}
 
@@ -63,7 +63,7 @@ func CreateUser(c *gin.Context) {
 	//Vérification de l'unicité de l'email
 	if err := query.Where("email = ?", user.Email).First(&existingUser).Error; err != nil {
 		if err != gorm.ErrRecordNotFound {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Erreur lors de la vérification de l'email par le controller CreateUser"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Erreur interne lors de la vérification de l'email"})
 			return
 		}
 	} else {
@@ -196,7 +196,7 @@ func UpdateUser(c *gin.Context) {
 
 		//Sauvegarder dans la base de données
 		if err := query.Save(&user).Error; err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Erreur lors de la sauvegarde des mises à jour de l'utilisateur dans la base de données"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Erreur interne lors de la sauvegarde des mises à jour de l'utilisateur"})
 			return
 		}
 
