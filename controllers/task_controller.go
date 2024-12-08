@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"regexp"
+	"strings"
 	"to-do-list-api/models"
 	"to-do-list-api/pkg"
 
@@ -25,6 +26,10 @@ func GetTasks(c *gin.Context) {
 
 	query := pkg.DB
 	if status != "" {
+		if !validStatUses[status] {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Statut invalide. Options : 'to-do', 'in-progress', 'done'"})
+			return
+		}
 		query = query.Where("status = ?", status)
 	}
 
@@ -82,7 +87,7 @@ func CreateTask(c *gin.Context) {
 // UpdateTask permet de mettre à jour une tâche
 func UpdateTask(c *gin.Context) {
 	var task models.Task
-	titleRegex := regexp.MustCompile(`^[\p{L}0-9\s]{4,}$`) // Pour autoriser les caractères d'espacement et les caractères alphanumériques dands le titre
+	titleRegex := regexp.MustCompile(`^[\p{L}0-9\s]{4,}$`) // Pour autoriser tout caractère alphabétique (accentué ou non) dans le titre
 	id := c.Param("id")
 
 	query := pkg.DB
@@ -120,6 +125,8 @@ func UpdateTask(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Le titre doit comporter au moins 4 caractères alphanumériques."})
 			return
 		}
+
+		updatedTask.Title = strings.TrimSpace(updatedTask.Title) //Nettoyer les espaces en excès avant de mettre à jour
 		task.Title = updatedTask.Title
 	}
 
