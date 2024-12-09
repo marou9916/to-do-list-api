@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"regexp"
+	"strconv"
 	"strings"
 	"to-do-list-api/models"
 	"to-do-list-api/pkg"
@@ -86,11 +87,16 @@ func CreateTask(c *gin.Context) {
 
 // UpdateTask permet de mettre à jour une tâche
 func UpdateTask(c *gin.Context) {
-	var task models.Task
 	titleRegex := regexp.MustCompile(`^[\p{L}0-9\s]{4,}$`) // Pour autoriser tout caractère alphabétique (accentué ou non) dans le titre
+	query := pkg.DB
 	id := c.Param("id")
 
-	query := pkg.DB
+	if _, err := strconv.Atoi(id); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "L'ID doit être un entier valide"})
+		return
+	}
+
+	var task models.Task
 
 	//Récupérer la tâche à mettre à jour
 	if err := query.First(&task, id).Error; err != nil {
@@ -143,7 +149,21 @@ func DeleteTask(c *gin.Context) {
 	id := c.Param("id")
 	query := pkg.DB
 
-	if err := query.Delete(&models.Task{}, id).Error; err != nil {
+	var task models.Task
+
+	if _, err := strconv.Atoi(id); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "L'ID doit être un entier valide"})
+		return
+	}
+
+	//Vérifier si la tâche existe
+	if err := query.First(&task, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Tâche non trouvée"})
+		return
+	}
+
+	//Supprimer la tâche
+	if err := query.Unscoped().Delete(&models.Task{}, id).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erreur lors de la suppression de la tâche"})
 		return
 	}

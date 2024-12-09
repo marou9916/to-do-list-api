@@ -85,6 +85,11 @@ func GetUser(c *gin.Context) {
 	query := pkg.DB
 	var user models.User
 
+	if _, err := strconv.Atoi(id); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "L'ID doit être un entier valide"})
+		return
+	}
+
 	if err := query.First(&user, id).Error; err != nil {
 		if err := query.First(&user, id).Error; err != nil {
 			if err == gorm.ErrRecordNotFound {
@@ -124,6 +129,11 @@ func UpdateUser(c *gin.Context) {
 	query := pkg.DB
 
 	var user models.User
+
+	if _, err := strconv.Atoi(id); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "L'ID doit être un entier valide"})
+		return
+	}
 
 	//Vérification de l'existence de l'utilisateur à mettre à jour dans la base de données
 	if err := query.First(&user, id).Error; err != nil {
