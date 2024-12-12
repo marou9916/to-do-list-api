@@ -18,8 +18,9 @@ func InitDatabase() {
 	}
 	log.Println("Base de données connectée avec succès !")
 
-	err = DB.AutoMigrate(&models.User{}, &models.Task{})
-	if err != nil {
+	DB.Exec("PRAGMA foreign_keys = ON;")
+
+	if err = DB.AutoMigrate(&models.User{}, &models.Task{}); err != nil {
 		log.Fatal("Échec de la migration des modèles :", err)
 		return
 	}
