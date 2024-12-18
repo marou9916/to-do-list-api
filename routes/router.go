@@ -3,6 +3,7 @@ package routes
 import (
 	"net/http"
 	"to-do-list-api/controllers"
+	"to-do-list-api/middlewares"
 
 	"github.com/gin-gonic/gin"
 )
@@ -25,6 +26,7 @@ func SetupRouter() *gin.Engine {
 
 	//Routes pour les tâches
 	taskRoutes := router.Group("/tasks")
+	taskRoutes.Use(middlewares.AuthRequired())
 	{
 		taskRoutes.GET("/", controllers.GetTasks)
 		taskRoutes.POST("/", controllers.CreateTask)

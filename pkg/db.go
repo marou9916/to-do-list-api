@@ -2,7 +2,7 @@ package pkg
 
 import (
 	"log"
-	"to-do-list-api/models"
+	"to-do-list-api/migrations"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -20,7 +20,7 @@ func InitDatabase() {
 
 	DB.Exec("PRAGMA foreign_keys = ON;")
 
-	if err = DB.AutoMigrate(&models.User{}, &models.Task{}); err != nil {
+	if err = migrations.Migrate(DB); err != nil {
 		log.Fatal("Échec de la migration des modèles :", err)
 		return
 	}
