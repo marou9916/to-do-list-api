@@ -11,6 +11,14 @@ import (
 func SetupRouter() *gin.Engine {
 	router := gin.Default()
 
+	//Routes pour l'authentification
+	authRoutes := router.Group("/auth")
+	{
+		authRoutes.POST("/register", controllers.Register)
+		authRoutes.POST("/login", controllers.Login)
+		authRoutes.POST("/logout", middlewares.AuthRequired(), controllers.Logout)
+	}
+
 	//Routes pour les utilisateurs
 	userRoutes := router.Group("/users")
 	{
@@ -30,8 +38,8 @@ func SetupRouter() *gin.Engine {
 	{
 		taskRoutes.GET("/", controllers.GetTasks)
 		taskRoutes.POST("/", controllers.CreateTask)
-		taskRoutes.PUT("/:id", controllers.UpdateTask)
-		taskRoutes.DELETE("/:id", controllers.DeleteTask)
+		taskRoutes.PUT("/:id", middlewares.AuthorizeTaskOwnerShip(), controllers.UpdateTask)
+		taskRoutes.DELETE("/:id", middlewares.AuthorizeTaskOwnerShip(), controllers.DeleteTask)
 	}
 
 	return router

@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"regexp"
-	"strconv"
 	"strings"
 	"to-do-list-api/models"
 	"to-do-list-api/pkg"
@@ -87,20 +86,19 @@ func CreateTask(c *gin.Context) {
 
 // UpdateTask permet de mettre à jour une tâche
 func UpdateTask(c *gin.Context) {
-	titleRegex := regexp.MustCompile(`^[\p{L}0-9\s]{4,}$`) // Pour autoriser tout caractère alphabétique (accentué ou non) dans le titre
+	titleRegex := regexp.MustCompile(`^[\p{L}0-9\s]{4,}$`) // p{L} : pour autoriser tout caractère alphabétique (accentué ou non) dans le titre
 	query := pkg.DB
-	id := c.Param("id")
 
-	if _, err := strconv.Atoi(id); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "L'ID doit être un entier valide"})
+	// Récupérer la tâche à partir du middleware
+	taskFromContext, exists := c.Get("task")
+	if !exists {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Impossible de récupérer la tâche depuis le contexte"})
 		return
 	}
 
-	var task models.Task
-
-	//Récupérer la tâche à mettre à jour
-	if err := query.First(&task, id).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Tâche avec l'ID " + id + " introuvable"})
+	task, ok := taskFromContext.(*models.Task)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erreur interne lors de la récupération de la tâche"})
 		return
 	}
 
@@ -146,24 +144,12 @@ func UpdateTask(c *gin.Context) {
 
 // DeleteTask permet de supprimer une tâche
 func DeleteTask(c *gin.Context) {
-	id := c.Param("id")
-	query := pkg.DB
-
-	var task models.Task
-
-	if _, err := strconv.Atoi(id); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "L'ID doit être un entier valide"})
-		return
-	}
-
-	//Vérifier si la tâche existe
-	if err := query.First(&task, id).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Tâche non trouvée"})
-		return
-	}
+	// Récupérer la tâche depuis le contexte
+	task, _ := c.Get("task")
+	castedTask := task.(*models.Task)
 
 	//Supprimer la tâche
-	if err := query.Unscoped().Delete(&models.Task{}, id).Error; err != nil {
+	if err := pkg.DB.Unscoped().Delete(castedTask).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erreur lors de la suppression de la tâche"})
 		return
 	}

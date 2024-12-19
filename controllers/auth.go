@@ -42,7 +42,7 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"message": "Inscription réalisée avec succès"})
+	c.JSON(http.StatusCreated, gin.H{"message": "Inscription réussie"})
 }
 
 // Login permet de se connecter
@@ -63,7 +63,7 @@ func Login(c *gin.Context) {
 		if err == gorm.ErrRecordNotFound {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Email incorrect"})
 		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Erreur interne"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Echec de la connexion dûe à une erreur interne"})
 		}
 		return
 	}
