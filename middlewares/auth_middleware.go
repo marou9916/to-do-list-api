@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// La fonction AuthRequired génère un middleware qui vérifie qu'un utilisateur a une session valide et qu'il est injecté au contexte
 func AuthRequired() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		query := pkg.DB
@@ -15,7 +16,7 @@ func AuthRequired() gin.HandlerFunc {
 		sessionToken, err := c.Cookie("session_token")
 		if err != nil || sessionToken == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authentification requise"})
-			c.Abort()
+			c.Abort() // pour marquer l'arrêt du traitement de la requête (les middlewares sont chaînés)
 			return
 		}
 
@@ -45,6 +46,6 @@ func AuthRequired() gin.HandlerFunc {
 		c.Set("currentUser", &user)
 
 		// Continuer vers le prochain middleware ou handler
-		c.Next()
+		c.Next() //à ajouter pour marquer la continuité du traitement
 	}
 }

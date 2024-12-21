@@ -89,16 +89,17 @@ func UpdateTask(c *gin.Context) {
 	titleRegex := regexp.MustCompile(`^[\p{L}0-9\s]{4,}$`) // p{L} : pour autoriser tout caractère alphabétique (accentué ou non) dans le titre
 	query := pkg.DB
 
-	// Récupérer la tâche à partir du middleware
+	// Récupérer la tâche ajoutée au contexte par le middleware
 	taskFromContext, exists := c.Get("task")
 	if !exists {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Impossible de récupérer la tâche depuis le contexte"})
 		return
 	}
 
+	//Convertir le type de la tâche récupérée
 	task, ok := taskFromContext.(*models.Task)
 	if !ok {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erreur interne lors de la récupération de la tâche"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Impossible de convertir le type de la tâche récupérée depuis le contexte"})
 		return
 	}
 
@@ -106,25 +107,25 @@ func UpdateTask(c *gin.Context) {
 
 	//Récupérer les données du corps
 	if err := c.ShouldBindJSON(&updatedTask); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Données invalides"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Format des données invalides"})
 		return
 	}
 
 	//Empêcher la modification de l'id du user associé
 	if updatedTask.UserID != task.UserID {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Pour associer à un autre user, veuillez créer une nouvelle tâche"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Action non autorisée"})
 		return
 	}
 
-	//Mettre à jour les champs de la tâche (vérifier Status si modifié)
-	if updatedTask.Status != task.Status {
+	//Mettre à jour les champs de la tâche (title et status)
+	if updatedTask.Status != task.Status { //vérifier la validité de Status si modifié
 		if !validStatUses[updatedTask.Status] {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Statut invalide. Options : 'to-do', 'in-progress', 'done'"})
 			return
 		}
 		task.Status = updatedTask.Status
 	}
-	if updatedTask.Title != task.Title {
+	if updatedTask.Title != task.Title { //vérifier le format de Title si modifié
 		if !titleRegex.MatchString(updatedTask.Title) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Le titre doit comporter au moins 4 caractères alphanumériques."})
 			return

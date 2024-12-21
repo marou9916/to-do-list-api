@@ -32,7 +32,7 @@ func AuthorizeTaskOwnerShip() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "L'ID doit être un entier valide"})
 			return
 		}
-		// Vérifier que la tâche existe et appartient à l'utilisateur
+		// Vérifier que la tâche existe
 		var task models.Task
 		if err := pkg.DB.First(&task, taskID).Error; err != nil {
 			if err != gorm.ErrRecordNotFound {
@@ -45,6 +45,7 @@ func AuthorizeTaskOwnerShip() gin.HandlerFunc {
 			return
 		}
 
+		//Vérifier qu'elle appartient bien à l'utilisateur authentifié
 		if task.UserID != user.ID {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Action non autorisée"})
 			c.Abort()
