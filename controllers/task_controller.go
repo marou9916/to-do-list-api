@@ -107,7 +107,7 @@ func UpdateTask(c *gin.Context) {
 
 	//Récupérer les données du corps
 	if err := c.ShouldBindJSON(&updatedTask); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Format des données invalides"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 

@@ -17,12 +17,14 @@ func AuthorizeTaskOwnerShip() gin.HandlerFunc {
 		authentifiedUser, exists := c.Get("currentUser")
 		if !exists {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Utilisateur non authentifié"})
+			c.Abort()
 			return
 		}
 
 		user, ok := authentifiedUser.(*models.User)
 		if !ok {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Impossible de récupérer l'utilisateur"})
+			c.Abort()
 			return
 		}
 
@@ -30,6 +32,7 @@ func AuthorizeTaskOwnerShip() gin.HandlerFunc {
 		taskID := c.Param("id")
 		if _, err := strconv.Atoi(taskID); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "L'ID doit être un entier valide"})
+			c.Abort()
 			return
 		}
 		// Vérifier que la tâche existe
@@ -47,7 +50,7 @@ func AuthorizeTaskOwnerShip() gin.HandlerFunc {
 
 		//Vérifier qu'elle appartient bien à l'utilisateur authentifié
 		if task.UserID != user.ID {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Action non autorisée"})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Dommage pour toi gros, action non autorisée"})
 			c.Abort()
 			return
 		}

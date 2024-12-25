@@ -11,12 +11,21 @@ import (
 func SetupRouter() *gin.Engine {
 	router := gin.Default()
 
+	// Aucune confiance envers les proxies
+	err := router.SetTrustedProxies(nil)
+	if err != nil {
+		panic(err)
+	}
+
 	//Routes pour l'authentification
 	authRoutes := router.Group("/auth")
 	{
 		authRoutes.POST("/register", controllers.Register)
 		authRoutes.POST("/login", controllers.Login)
 		authRoutes.POST("/logout", middlewares.AuthRequired(), controllers.Logout)
+		authRoutes.GET("/", func(c *gin.Context) {
+			c.JSON(http.StatusNotFound, gin.H{"message": "Inscription ? Connexion ? Ou déconnexion ?"})
+		})
 	}
 
 	//Routes pour les utilisateurs
@@ -36,10 +45,10 @@ func SetupRouter() *gin.Engine {
 	taskRoutes := router.Group("/tasks")
 	taskRoutes.Use(middlewares.AuthRequired())
 	{
-		taskRoutes.GET("/", controllers.GetTasks)
-		taskRoutes.POST("/", controllers.CreateTask)
-		taskRoutes.PUT("/:id", middlewares.AuthorizeTaskOwnerShip(), controllers.UpdateTask)
-		taskRoutes.DELETE("/:id", middlewares.AuthorizeTaskOwnerShip(), controllers.DeleteTask)
+		taskRoutes.GET("/", middlewares.AuthorizeTaskOwnerShip(), controllers.GetTasks)
+		taskRoutes.POST("/", middlewares.AuthorizeTaskOwnerShip(), controllers.CreateTask)
+		taskRoutes.PUT("/:id",middlewares.AuthorizeTaskOwnerShip(), controllers.UpdateTask)
+		taskRoutes.DELETE("/:id",middlewares.AuthorizeTaskOwnerShip(), controllers.DeleteTask)
 	}
 
 	return router

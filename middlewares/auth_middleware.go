@@ -14,7 +14,7 @@ func AuthRequired() gin.HandlerFunc {
 		query := pkg.DB
 		//Lire le cookie de session
 		sessionToken, err := c.Cookie("session_token")
-		if err != nil || sessionToken == "" {
+		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authentification requise"})
 			c.Abort() // pour marquer l'arrêt du traitement de la requête (les middlewares sont chaînés)
 			return
