@@ -168,5 +168,34 @@ Ce document détaille les tests réalisés pour valider les middlewares `AuthReq
 
 ---
 
+# Documentation des Tests
+
+## 6. Tests pour les fonctions de validation
+
+### 6.1. ValidateEmailFormat
+- **Cas de test** :
+  - Email valide : `user@example.com`, `user.name+tag+sorting@example.com`, `user@subdomain.example.com`.
+  - Email invalide : `plainaddress`, `@missingusername.com`, `user@.com`.
+- **Résultats attendus** :
+  - Les e-mails valides doivent retourner `true`.
+  - Les e-mails invalides doivent retourner `false`.
+
+### 6.2. ValidateUsernameFormat
+- **Cas de test** :
+  - Username valide : `validUser123`, `short`.
+  - Username invalide : `user_name_invalid!`, chaîne vide, nom trop long (> 20 caractères).
+- **Résultats attendus** :
+  - Les usernames valides doivent retourner `true`.
+  - Les usernames invalides doivent retourner `false`.
+
+### 6.3. ValidatePassword
+- **Cas de test** :
+  - Mot de passe valide : `Password1`.
+  - Mot de passe invalide : mot trop court (< 8 caractères), absence de majuscule, absence de minuscule, absence de chiffre.
+- **Résultats attendus** :
+  - Les mots de passe valides doivent retourner `true`.
+  - Les mots de passe invalides doivent retourner `false`.
+
+
 ## Conclusion
 Tous les tests ont été réalisés avec succès et les comportements attendus ont été vérifiés. La documentation pourra être mise à jour avec de nouveaux cas au besoin.

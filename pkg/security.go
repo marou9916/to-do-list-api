@@ -14,3 +14,4 @@ func GenerateToken() string {
 
 	return hex.EncodeToString(bytes)
 }
+

@@ -3,6 +3,7 @@ module to-do-list-api
 go 1.23.3
 
 require (
+	github.com/dlclark/regexp2 v1.11.4
 	github.com/gin-gonic/gin v1.10.0
 	golang.org/x/crypto v0.23.0
 	gorm.io/driver/sqlite v1.5.6

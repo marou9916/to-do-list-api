@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"regexp"
 	"strconv"
 	"to-do-list-api/models"
 	"to-do-list-api/pkg"
@@ -12,10 +11,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
-
-// Regex pour valider le username et l'email
-var usernameRegex = regexp.MustCompile(`^[a-zA-Z0-9_-]{3,20}$`)
-var emailRegex = regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
 
 // CreateUser permet de créer un nouvel utilisateur
 func CreateUser(c *gin.Context) {
@@ -49,13 +44,13 @@ func CreateUser(c *gin.Context) {
 	}
 
 	//Vérification du format du user
-	if !usernameRegex.MatchString(user.Username) {
+	if !pkg.ValidateUsernameFormat(user.Username) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Format du username invalide"})
 		return
 	}
 
 	//Vérification du format de l'email
-	if !emailRegex.MatchString(user.Email) {
+	if !pkg.ValidateEmailFormat(user.Email) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Format d'email invalide"})
 		return
 	}
@@ -160,13 +155,13 @@ func UpdateUser(c *gin.Context) {
 	}
 
 	//Vérification du format du username
-	if !usernameRegex.MatchString(updatedUserData.Username) {
+	if !pkg.ValidateUsernameFormat(updatedUserData.Username) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Format du username invalide"})
 		return
 	}
 
 	//Vérification du format de l'email
-	if !emailRegex.MatchString(updatedUserData.Email) {
+	if !pkg.ValidateEmailFormat(updatedUserData.Email) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Format d'email invalide"})
 		return
 	}
