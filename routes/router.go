@@ -6,6 +6,9 @@ import (
 	"to-do-list-api/middlewares"
 
 	"github.com/gin-gonic/gin"
+	ginSwagger "github.com/swaggo/gin-swagger"
+	swaggerFiles "github.com/swaggo/files"
+
 )
 
 func SetupRouter() *gin.Engine {
@@ -16,6 +19,9 @@ func SetupRouter() *gin.Engine {
 	if err != nil {
 		panic(err)
 	}
+
+	// Swagger route
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	//Routes pour l'authentification
 	authRoutes := router.Group("/auth")
@@ -47,8 +53,8 @@ func SetupRouter() *gin.Engine {
 	{
 		taskRoutes.GET("/", middlewares.AuthorizeTaskOwnerShip(), controllers.GetTasks)
 		taskRoutes.POST("/", middlewares.AuthorizeTaskOwnerShip(), controllers.CreateTask)
-		taskRoutes.PUT("/:id",middlewares.AuthorizeTaskOwnerShip(), controllers.UpdateTask)
-		taskRoutes.DELETE("/:id",middlewares.AuthorizeTaskOwnerShip(), controllers.DeleteTask)
+		taskRoutes.PUT("/:id", middlewares.AuthorizeTaskOwnerShip(), controllers.UpdateTask)
+		taskRoutes.DELETE("/:id", middlewares.AuthorizeTaskOwnerShip(), controllers.DeleteTask)
 	}
 
 	return router

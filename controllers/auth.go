@@ -11,8 +11,17 @@ import (
 	"gorm.io/gorm"
 )
 
-// Register permet d'enregistrer un nouvel utilisateur
-
+// Register godoc
+// @Summary Register a new user
+// @Description Create a new user account with username, email, and password
+// @Tags Authentication
+// @Accept json
+// @Produce json
+// @Param payload body struct {Username string `json:"username" binding:"required"`; Email string `json:"email" binding:"required, email"`; Password string `json:"password" binding:"required, min=8"`} true "User registration details"
+// @Success 201 {object} map[string]string{"message": "Inscription réussie"}
+// @Failure 400 {object} map[string]string{"error": "Description of the error"}
+// @Failure 500 {object} map[string]string{"error": "Description of the error"}
+// @Router /register [post]
 func Register(c *gin.Context) {
 	var input struct {
 		Username string `json:"username" binding:"required"`
@@ -24,6 +33,8 @@ func Register(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	// Vérifications supplémentaires
+	
 	//Vérification du format du username
 	if !pkg.ValidateUsernameFormat(input.Username) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Format du username invalide"})
@@ -66,14 +77,13 @@ func Register(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erreur lors du hachage du mot de passe"})
 		return
 	}
-
-	//Création d'un nouvel utilisateur dans la base de données
+	
+	// Création de l'utilisateur
 	user := models.User{
 		Username: input.Username,
 		Email:    input.Email,
 		Password: string(hashedPassword),
 	}
-
 	if err := pkg.DB.Create(&user).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erreur lors de la création de l'utilisateur"})
 		return
@@ -82,7 +92,18 @@ func Register(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"message": "Inscription réussie"})
 }
 
-// Login permet de se connecter
+// Login godoc
+// @Summary User login
+// @Description Authenticate a user with email and password
+// @Tags Authentication
+// @Accept json
+// @Produce json
+// @Param payload body struct {Email string `json:"email" binding:"required, email"`; Password string `json:"password" binding:"required"`} true "Login credentials"
+// @Success 200 {object} map[string]string{"message": "Connexion réussie"}
+// @Failure 400 {object} map[string]string{"error": "Description of the error"}
+// @Failure 401 {object} map[string]string{"error": "Unauthorized"}
+// @Failure 500 {object} map[string]string{"error": "Description of the error"}
+// @Router /login [post]
 func Login(c *gin.Context) {
 	var input struct {
 		Email    string `json:"email" binding:"required, email"`
@@ -93,7 +114,7 @@ func Login(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
+	// Authentification
 	if !pkg.ValidateEmailFormat(input.Email) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Format d'email invalide"})
 		return
@@ -133,10 +154,18 @@ func Login(c *gin.Context) {
 	//Configurer un cookie sécurisé
 	c.SetCookie("session_token", session.Token, int(24*time.Hour.Seconds()), "/", "", true, false)
 
+
 	c.JSON(http.StatusOK, gin.H{"message": "Connexion réussie"})
 }
 
-// Logout permet de se déconnecter
+// Logout godoc
+// @Summary User logout
+// @Description Log out the user by clearing the session token
+// @Tags Authentication
+// @Produce json
+// @Success 200 {object} map[string]string{"message": "Déconnexion réussie"}
+// @Failure 500 {object} map[string]string{"error": "Description of the error"}
+// @Router /logout [post]
 func Logout(c *gin.Context) {
 	c.SetCookie("session_token", "", -1, "/", "", false, true)
 	c.JSON(http.StatusOK, gin.H{"message": "Déconnexion réussie"})

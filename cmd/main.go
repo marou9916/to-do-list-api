@@ -4,6 +4,7 @@ import (
 	"log"
 	"to-do-list-api/pkg"
 	"to-do-list-api/routes"
+	_"to-do-list-api/docs"
 )
 
 func main() {
