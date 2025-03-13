@@ -6,11 +6,15 @@ import (
 	"to-do-list-api/middlewares"
 
 	"github.com/gin-gonic/gin"
-	ginSwagger "github.com/swaggo/gin-swagger"
 	swaggerFiles "github.com/swaggo/files"
-
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
+// @title To-Do List API
+// @version 1.0
+// @description This is a simple To-Do List API.
+// @host localhost:8080
+// @BasePath /
 func SetupRouter() *gin.Engine {
 	router := gin.Default()
 

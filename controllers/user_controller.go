@@ -101,6 +101,15 @@ func GetUser(c *gin.Context) {
 
 }
 
+// GetUsers godoc
+// @Summary Récupère tous les utilisateurs
+// @Description Liste tous les utilisateurs existants
+// @Tags Users
+// @Produce json
+// @Success 200 {object} map[string][]models.User "Liste des utilisateurs"
+// @Failure 500 {object} map[string]string{"error": "Description de l'erreur"}
+// @Router /users [get]
+
 // GetUsers permet de récupérer tous les utilisateurs
 func GetUsers(c *gin.Context) {
 	var users []models.User

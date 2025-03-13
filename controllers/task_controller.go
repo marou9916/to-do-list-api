@@ -19,6 +19,17 @@ var validStatUses = map[string]bool{
 	"done":        true,
 }
 
+// GetTasks godoc
+// @Summary Récupère les tâches
+// @Description Récupère la liste des tâches, avec une option pour filtrer par statut
+// @Tags Tasks
+// @Produce json
+// @Param status query string false "Filtrer par statut ('to-do', 'in-progress', 'done')"
+// @Success 200 {object} map[string][]models.Task "Liste des tâches"
+// @Failure 400 {object} map[string]string{"error": "Description de l'erreur"}
+// @Failure 500 {object} map[string]string{"error": "Description de l'erreur"}
+// @Router /tasks [get]
+
 // GetTasks permet de récupérer la liste des tâches
 func GetTasks(c *gin.Context) {
 	var tasks []models.Task
@@ -41,6 +52,18 @@ func GetTasks(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"tasks": tasks})
 
 }
+
+// CreateTask godoc
+// @Summary Crée une nouvelle tâche
+// @Description Ajoute une tâche pour un utilisateur spécifique
+// @Tags Tasks
+// @Accept json
+// @Produce json
+// @Param payload body models.Task true "Détails de la tâche"
+// @Success 201 {object} map[string]string{"message": "Tâche créée avec succès"}
+// @Failure 400 {object} map[string]string{"error": "Description de l'erreur"}
+// @Failure 500 {object} map[string]string{"error": "Description de l'erreur"}
+// @Router /tasks [post]
 
 // CreateTask permet de créer une tâche
 func CreateTask(c *gin.Context) {
@@ -83,6 +106,19 @@ func CreateTask(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"message": fmt.Sprintf("Tâche %s créée et associée au user %s avec succès", task.Title, user.Username)})
 
 }
+
+// UpdateTask godoc
+// @Summary Met à jour une tâche existante
+// @Description Modifie le titre ou le statut d'une tâche
+// @Tags Tasks
+// @Accept json
+// @Produce json
+// @Param id path int true "ID de la tâche"
+// @Param payload body models.Task true "Détails de la mise à jour"
+// @Success 200 {object} map[string]string{"message": "Tâche mise à jour avec succès"}
+// @Failure 400 {object} map[string]string{"error": "Description de l'erreur"}
+// @Failure 500 {object} map[string]string{"error": "Description de l'erreur"}
+// @Router /tasks/{id} [put]
 
 // UpdateTask permet de mettre à jour une tâche
 func UpdateTask(c *gin.Context) {
@@ -142,6 +178,17 @@ func UpdateTask(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Tâche mis à jour avec succès", "task": task})
 }
+
+// DeleteTask godoc
+// @Summary Supprime une tâche
+// @Description Supprime une tâche spécifique par son ID
+// @Tags Tasks
+// @Produce json
+// @Param id path int true "ID de la tâche"
+// @Success 200 {object} map[string]string{"message": "Tâche supprimée avec succès"}
+// @Failure 400 {object} map[string]string{"error": "Description de l'erreur"}
+// @Failure 500 {object} map[string]string{"error": "Description de l'erreur"}
+// @Router /tasks/{id} [delete]
 
 // DeleteTask permet de supprimer une tâche
 func DeleteTask(c *gin.Context) {
